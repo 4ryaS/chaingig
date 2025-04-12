@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  walletAddress String    @unique
+  name          String
+  email         String    @unique
+  bio           String?
+  skills        String[]
+  rating        Float     @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  jobs          Job[]     @relation("ClientJobs")
+  proposals     Proposal[]
+  reviewsGiven  Review[]  @relation("ReviewerReviews")
+  reviewsReceived Review[] @relation("ReviewedReviews")
+}
+
+model Job {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  budget      Float
+  deadline    DateTime
+  status      JobStatus  @default(OPEN)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  clientId    String
+  client      User       @relation("ClientJobs", fields: [clientId], references: [id])
+  proposals   Proposal[]
+  contract    Contract?
+  reviews     Review[]
+}
+
+model Proposal {
+  id          String       @id @default(cuid())
+  description String
+  budget      Float
+  deadline    DateTime
+  status      ProposalStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  freelancerId String
+  freelancer   User        @relation(fields: [freelancerId], references: [id])
+  jobId        String
+  job          Job         @relation(fields: [jobId], references: [id])
+  contract     Contract?
+}
+
+model Contract {
+  id            String        @id @default(cuid())
+  amount        Float
+  status        ContractStatus @default(ACTIVE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  jobId         String        @unique
+  job           Job           @relation(fields: [jobId], references: [id])
+  proposalId    String        @unique
+  proposal      Proposal      @relation(fields: [proposalId], references: [id])
+  smartContract String        // Address of the deployed smart contract
+  milestones    Milestone[]
+  disputes      Dispute[]
+}
+
+model Milestone {
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  amount      Float
+  status      MilestoneStatus @default(PENDING)
+  dueDate     DateTime
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  contractId  String
+  contract    Contract       @relation(fields: [contractId], references: [id])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  rating      Int
+  comment     String
+  createdAt   DateTime @default(now())
+  reviewerId  String
+  reviewer    User     @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  reviewedId  String
+  reviewed    User     @relation("ReviewedReviews", fields: [reviewedId], references: [id])
+  jobId       String
+  job         Job      @relation(fields: [jobId], references: [id])
+}
+
+model Dispute {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  status      DisputeStatus @default(OPEN)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  contractId  String
+  contract    Contract     @relation(fields: [contractId], references: [id])
+}
+
+enum JobStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum ContractStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  DISPUTED
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+enum DisputeStatus {
+  OPEN
+  RESOLVED
+  CANCELLED
+}
