@@ -1,5 +1,10 @@
-import React from 'react';
-import { Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  X,
+} from 'lucide-react';
 
 type NotificationType = 'success' | 'info' | 'warning';
 
@@ -11,7 +16,7 @@ interface Notification {
   time: string;
 }
 
-const notifications: Notification[] = [
+const initialNotifications: Notification[] = [
   {
     id: 1,
     type: 'success',
@@ -35,38 +40,58 @@ const notifications: Notification[] = [
   },
 ];
 
-const iconStyles: Record<NotificationType, string> = {
-  success: 'text-green-400 bg-green-900/30',
-  info: 'text-blue-400 bg-blue-900/30',
-  warning: 'text-yellow-400 bg-yellow-900/30',
+const iconMap = {
+  success: <CheckCircle className="w-6 h-6 text-green-300 drop-shadow-glow" />,
+  info: <Clock className="w-6 h-6 text-blue-300 drop-shadow-glow" />,
+  warning: <AlertCircle className="w-6 h-6 text-yellow-300 drop-shadow-glow" />,
+};
+
+const cardStyleMap = {
+  success: 'bg-green-500/10 border border-green-400/20 hover:shadow-green-600/20',
+  info: 'bg-blue-500/10 border border-blue-400/20 hover:shadow-blue-600/20',
+  warning: 'bg-yellow-500/10 border border-yellow-400/20 hover:shadow-yellow-600/20',
 };
 
 const Notifications: React.FC = () => {
+  const [notifications, setNotifications] = useState(initialNotifications);
+
+  const dismissNotification = (id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Notifications</h1>
       <div className="space-y-4">
-        {notifications.map((notification) => (
+        {notifications.map((n) => (
           <div
-            key={notification.id}
-            className="flex items-start space-x-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-lg transition-all duration-300"
+            key={n.id}
+            className={`flex items-start justify-between p-4 rounded-xl border shadow-md transition-all duration-300 group ${cardStyleMap[n.type]}`}
           >
-            <div
-              className={`w-10 h-10 flex items-center justify-center rounded-full ${iconStyles[notification.type]}`}
+            <div className="flex space-x-4">
+              <div className="min-w-[40px] h-10 flex items-center justify-center rounded-full bg-black/20">
+                {iconMap[n.type]}
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                  {n.title}
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{n.message}</p>
+                <span className="text-xs text-gray-400 dark:text-gray-500">{n.time}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => dismissNotification(n.id)}
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-gray-500 hover:text-red-500"
+              title="Dismiss"
             >
-              {notification.type === 'success' && <CheckCircle className="w-6 h-6" />}
-              {notification.type === 'info' && <Clock className="w-6 h-6" />}
-              {notification.type === 'warning' && <AlertCircle className="w-6 h-6" />}
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-                {notification.title}
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{notification.message}</p>
-              <span className="text-xs text-gray-400 dark:text-gray-500">{notification.time}</span>
-            </div>
+              <X className="w-5 h-5" />
+            </button>
           </div>
         ))}
+        {notifications.length === 0 && (
+          <p className="text-center text-gray-500 dark:text-gray-400">No notifications right now 🎉</p>
+        )}
       </div>
     </div>
   );
