@@ -10,13 +10,11 @@ export class ContractService {
     this.signer = new ethers.Wallet(privateKey, this.provider);
   }
 
-  async deployContract(contractData: any): Promise<string> {
-    // This will be implemented by your friend
-    // It will deploy the smart contract and return its address
-    throw new Error('Not implemented');
+  async getContract(contractAddress: string, abi: any): Promise<ethers.Contract> {
+    return new ethers.Contract(contractAddress, abi, this.signer);
   }
 
-  async releaseEscrow(contractAddress: string, jobId: string): Promise<void> {
+  async releaseEscrow(contractAddress: string, jobId: string, abi: any): Promise<void> {
     // Check if the job is completed
     const job = await prisma.job.findUnique({
       where: { id: jobId },
@@ -35,26 +33,33 @@ export class ContractService {
       throw new Error('Contract address mismatch');
     }
 
-    // This will be implemented by your friend
-    // It will release funds from escrow for the completed job
-    throw new Error('Not implemented');
+    const contract = await this.getContract(contractAddress, abi);
+    const tx = await contract.releaseEscrow(jobId);
+    await tx.wait();
   }
 
-  async createDispute(contractAddress: string, disputeData: any): Promise<void> {
-    // This will be implemented by your friend
-    // It will create a dispute on the smart contract
-    throw new Error('Not implemented');
+  async createDispute(contractAddress: string, disputeData: any, abi: any): Promise<void> {
+    const contract = await this.getContract(contractAddress, abi);
+    const tx = await contract.createDispute(
+      disputeData.jobId,
+      disputeData.reason,
+      disputeData.evidence
+    );
+    await tx.wait();
   }
 
-  async resolveDispute(contractAddress: string, disputeId: string, resolution: any): Promise<void> {
-    // This will be implemented by your friend
-    // It will resolve a dispute on the smart contract
-    throw new Error('Not implemented');
+  async resolveDispute(contractAddress: string, disputeId: string, resolution: any, abi: any): Promise<void> {
+    const contract = await this.getContract(contractAddress, abi);
+    const tx = await contract.resolveDispute(
+      disputeId,
+      resolution.decision,
+      resolution.reason
+    );
+    await tx.wait();
   }
 
   async getContractBalance(contractAddress: string): Promise<string> {
-    // This will be implemented by your friend
-    // It will return the current balance of the smart contract
-    throw new Error('Not implemented');
+    const balance = await this.provider.getBalance(contractAddress);
+    return ethers.formatEther(balance);
   }
 } 

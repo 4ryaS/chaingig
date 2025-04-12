@@ -22,32 +22,23 @@ server.register(cors, {
 server.register(env, {
   schema: {
     type: 'object',
-    required: ['RPC_URL', 'PRIVATE_KEY'],
+    required: ['RPC_URL', 'PRIVATE_KEY', 'CONTRACT_ADDRESS', 'CONTRACT_ABI'],
     properties: {
       RPC_URL: { type: 'string' },
       PRIVATE_KEY: { type: 'string' },
-      CONTRACT_ADDRESS: { type: 'string' }
+      CONTRACT_ADDRESS: { type: 'string' },
+      CONTRACT_ABI: { type: 'string' }
     }
   }
 });
 
 // Contract endpoints
-server.post('/contracts/deploy', async (request, reply) => {
-  try {
-    const contractData = request.body;
-    const contractAddress = await contractService.deployContract(contractData);
-    return { contractAddress };
-  } catch (error) {
-    server.log.error(error);
-    reply.status(500).send({ error: 'Failed to deploy contract' });
-  }
-});
-
 server.post('/contracts/:address/release-escrow', async (request, reply) => {
   try {
     const { address } = request.params as { address: string };
     const { jobId } = request.body as { jobId: string };
-    await contractService.releaseEscrow(address, jobId);
+    const abi = JSON.parse(contractConfig.contractABI);
+    await contractService.releaseEscrow(address, jobId, abi);
     return { success: true };
   } catch (error) {
     server.log.error(error);
@@ -71,7 +62,8 @@ server.post('/contracts/:address/disputes', async (request, reply) => {
   try {
     const { address } = request.params as { address: string };
     const disputeData = request.body;
-    await contractService.createDispute(address, disputeData);
+    const abi = JSON.parse(contractConfig.contractABI);
+    await contractService.createDispute(address, disputeData, abi);
     return { success: true };
   } catch (error) {
     server.log.error(error);
@@ -83,7 +75,8 @@ server.post('/contracts/:address/disputes/:disputeId/resolve', async (request, r
   try {
     const { address, disputeId } = request.params as { address: string; disputeId: string };
     const resolution = request.body;
-    await contractService.resolveDispute(address, disputeId, resolution);
+    const abi = JSON.parse(contractConfig.contractABI);
+    await contractService.resolveDispute(address, disputeId, resolution, abi);
     return { success: true };
   } catch (error) {
     server.log.error(error);
