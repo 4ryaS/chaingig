@@ -1,5 +1,17 @@
 {
   "name": "hardhat-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "build": "tsc",
+    "test": "hardhat test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.13",
@@ -8,11 +20,17 @@
     "@typechain/hardhat": "^9.1.0",
     "hardhat": "^2.23.0",
     "hardhat-gas-reporter": "^2.2.2",
-    "prisma": "^6.6.0",
-    "solidity-coverage": "^0.8.14"
+    "nodemon": "^3.1.9",
+    "prisma": "^5.10.2",
+    "solidity-coverage": "^0.8.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@prisma/client": "^6.6.0",
-    "ethers": "^6.13.5"
+    "@fastify/cors": "^8.4.1",
+    "@fastify/env": "^4.2.0",
+    "@prisma/client": "^5.10.2",
+    "ethers": "^6.13.5",
+    "fastify": "^4.26.1"
   }
 }

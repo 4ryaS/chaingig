@@ -1,7 +1,5 @@
 import { ethers } from 'ethers';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../lib/prisma';
 
 export class ContractService {
   private provider: ethers.JsonRpcProvider;
@@ -18,9 +16,27 @@ export class ContractService {
     throw new Error('Not implemented');
   }
 
-  async releaseEscrow(contractAddress: string, milestoneId: string): Promise<void> {
+  async releaseEscrow(contractAddress: string, jobId: string): Promise<void> {
+    // Check if the job is completed
+    const job = await prisma.job.findUnique({
+      where: { id: jobId },
+      include: { contract: true }
+    });
+
+    if (!job) {
+      throw new Error('Job not found');
+    }
+
+    if (job.status !== 'COMPLETED') {
+      throw new Error('Cannot release escrow: Job is not completed');
+    }
+
+    if (job.contract?.smartContract !== contractAddress) {
+      throw new Error('Contract address mismatch');
+    }
+
     // This will be implemented by your friend
-    // It will release funds from escrow for a specific milestone
+    // It will release funds from escrow for the completed job
     throw new Error('Not implemented');
   }
 
