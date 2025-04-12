@@ -1,10 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Wallet, Bell, User, Sun, Moon } from 'lucide-react';
+import { Wallet, Bell, User } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
+
+  // Simulating unread notification count
+  const hasUnread = true;
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-purple-500/20 shadow-sm transition-colors duration-300">
@@ -17,9 +20,16 @@ const Navbar = () => {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300">
+            <Link to="/notifications" className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-300">
               <Bell className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-            </button>
+              {hasUnread && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping" />
+              )}
+              {hasUnread && (
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
+              )}
+            </Link>
+
             <Link to="/profile" className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
                 <User className="h-5 w-5 text-white" />

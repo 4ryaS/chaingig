@@ -35,34 +35,34 @@ const Analytics = () => {
         <div className="bg-gray-800 p-6 rounded-xl">
           <div className="flex items-center space-x-3 mb-4">
             <DollarSign className="w-6 h-6 text-purple-500" />
-            <h2 className="text-xl font-semibold text-white">Total Earnings</h2>
+            <h2 className="text-xl font-semibold text-white glowing-text">Total Earnings</h2>
           </div>
-          <p className="text-3xl font-bold text-purple-400">$16,060</p>
+          <p className="text-3xl font-bold text-purple-400 glowing-text">$16,060</p>
           <p className="text-green-400 text-sm mt-2">+12.5% from last month</p>
         </div>
 
         <div className="bg-gray-800 p-6 rounded-xl">
           <div className="flex items-center space-x-3 mb-4">
             <Users className="w-6 h-6 text-purple-500" />
-            <h2 className="text-xl font-semibold text-white">Active Clients</h2>
+            <h2 className="text-xl font-semibold text-white glowing-text">Active Clients</h2>
           </div>
-          <p className="text-3xl font-bold text-purple-400">120</p>
+          <p className="text-3xl font-bold text-purple-400 glowing-text">120</p>
           <p className="text-green-400 text-sm mt-2">+5% from last month</p>
         </div>
 
         <div className="bg-gray-800 p-6 rounded-xl">
           <div className="flex items-center space-x-3 mb-4">
             <Clock className="w-6 h-6 text-purple-500" />
-            <h2 className="text-xl font-semibold text-white">Avg. Response Time</h2>
+            <h2 className="text-xl font-semibold text-white glowing-text">Avg. Response Time</h2>
           </div>
-          <p className="text-3xl font-bold text-purple-400">2.5h</p>
+          <p className="text-3xl font-bold text-purple-400 glowing-text">2.5h</p>
           <p className="text-green-400 text-sm mt-2">-30min from last month</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
-        <div className="bg-gray-800 p-6 rounded-xl">
-          <h2 className="text-xl font-bold text-white mb-6">Monthly Earnings</h2>
+        <div className="bg-gray-800 p-6 rounded-xl hover:bg-opacity-80 transition duration-300 ease-in-out">
+          <h2 className="text-xl font-bold text-white mb-6 glowing-text">Monthly Earnings</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={monthlyData}>
@@ -87,8 +87,8 @@ const Analytics = () => {
           </div>
         </div>
 
-        <div className="bg-gray-800 p-6 rounded-xl">
-          <h2 className="text-xl font-bold text-white mb-6">Projects by Type</h2>
+        <div className="bg-gray-800 p-6 rounded-xl hover:bg-opacity-80 transition duration-300 ease-in-out">
+          <h2 className="text-xl font-bold text-white mb-6 glowing-text">Projects by Type</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -130,7 +130,7 @@ const Analytics = () => {
         </div>
 
         <div className="col-span-2 bg-gray-800 p-6 rounded-xl">
-          <h2 className="text-xl font-bold text-white mb-6">Projects Overview</h2>
+          <h2 className="text-xl font-bold text-white mb-6 glowing-text">Projects Overview</h2>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData}>
@@ -139,12 +139,28 @@ const Analytics = () => {
                 <YAxis stroke="#9CA3AF" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1F2937',
-                    border: 'none',
-                    borderRadius: '0.5rem',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    backdropFilter: 'blur(8px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '0.75rem',
+                    boxShadow: '0 0 12px rgba(255, 255, 255, 0.3)',
+                    color: '#fff',
+                  }}
+                  labelStyle={{ color: '#ccc' }}
+                  itemStyle={{ color: '#fff' }}
+                  cursor={{ fill: 'transparent' }}
+                />
+                <Bar
+                  dataKey="projects"
+                  fill="#A855F7"
+                  radius={[4, 4, 0, 0]}
+                  activeBar={{
+                    fill: '#C084FC',
+                    style: {
+                      filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.6))',
+                    },
                   }}
                 />
-                <Bar dataKey="projects" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
