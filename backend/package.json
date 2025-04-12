@@ -1,28 +1,21 @@
 {
-  "name": "hardhat-project",
+  "name": "chaingig-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend for ChainGig - A blockchain-based freelancing platform",
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/server.ts",
     "dev": "nodemon --exec ts-node src/server.ts",
     "build": "tsc",
-    "test": "hardhat test"
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
-  "keywords": [],
+  "keywords": ["blockchain", "freelancing", "ethereum", "smart-contracts"],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@nomicfoundation/hardhat-verify": "^2.0.13",
-    "@nomiclabs/hardhat-etherscan": "^3.1.8",
-    "@typechain/ethers-v5": "^11.1.2",
-    "@typechain/hardhat": "^9.1.0",
-    "hardhat": "^2.23.0",
-    "hardhat-gas-reporter": "^2.2.2",
     "nodemon": "^3.1.9",
     "prisma": "^5.10.2",
-    "solidity-coverage": "^0.8.14",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },

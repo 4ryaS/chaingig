@@ -22,12 +22,14 @@ server.register(cors, {
 server.register(env, {
   schema: {
     type: 'object',
-    required: ['RPC_URL', 'PRIVATE_KEY', 'CONTRACT_ADDRESS', 'CONTRACT_ABI'],
+    required: ['RPC_URL', 'PRIVATE_KEY', 'CONTRACT_ADDRESS', 'CONTRACT_ABI', 'DISPUTE_RESOLVER_ADDRESS', 'REPUTATION_MANAGER_ADDRESS'],
     properties: {
       RPC_URL: { type: 'string' },
       PRIVATE_KEY: { type: 'string' },
       CONTRACT_ADDRESS: { type: 'string' },
-      CONTRACT_ABI: { type: 'string' }
+      CONTRACT_ABI: { type: 'string' },
+      DISPUTE_RESOLVER_ADDRESS: { type: 'string' },
+      REPUTATION_MANAGER_ADDRESS: { type: 'string' }
     }
   }
 });
@@ -92,6 +94,64 @@ server.get('/contracts/:address/balance', async (request, reply) => {
   } catch (error) {
     server.log.error(error);
     reply.status(500).send({ error: 'Failed to get contract balance' });
+  }
+});
+
+// New endpoints for additional functionality
+server.get('/contracts/:address/details', async (request, reply) => {
+  try {
+    const { address } = request.params as { address: string };
+    const abi = JSON.parse(contractConfig.contractABI);
+    const details = await contractService.getJobDetails(address, abi);
+    return { details };
+  } catch (error) {
+    server.log.error(error);
+    reply.status(500).send({ error: 'Failed to get job details' });
+  }
+});
+
+server.post('/contracts/:address/submit-work', async (request, reply) => {
+  try {
+    const { address } = request.params as { address: string };
+    const { jobId, submission } = request.body as { jobId: string; submission: string };
+    const abi = JSON.parse(contractConfig.contractABI);
+    await contractService.submitWork(address, jobId, submission, abi);
+    return { success: true };
+  } catch (error) {
+    server.log.error(error);
+    reply.status(500).send({ error: 'Failed to submit work' });
+  }
+});
+
+server.get('/users/:address/reputation', async (request, reply) => {
+  try {
+    const { address } = request.params as { address: string };
+    const reputation = await contractService.getReputation(address);
+    return { reputation };
+  } catch (error) {
+    server.log.error(error);
+    reply.status(500).send({ error: 'Failed to get user reputation' });
+  }
+});
+
+server.get('/jobs', async (request, reply) => {
+  try {
+    const jobs = await contractService.getAllJobs();
+    return { jobs };
+  } catch (error) {
+    server.log.error(error);
+    reply.status(500).send({ error: 'Failed to get all jobs' });
+  }
+});
+
+server.get('/jobs/client/:address', async (request, reply) => {
+  try {
+    const { address } = request.params as { address: string };
+    const jobs = await contractService.getJobsByClient(address);
+    return { jobs };
+  } catch (error) {
+    server.log.error(error);
+    reply.status(500).send({ error: 'Failed to get client jobs' });
   }
 });
 
